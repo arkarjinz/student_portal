@@ -23,20 +23,8 @@ public class ClubController {
     public List<ClubInfo> getClubInfo() {
         return clubService.getClubInfo();
     }
-    //(String clubName, String studentName, String studentNumber)
 
-    record ClubJoinData(@JsonProperty("club_name") String clubName,
-                        @JsonProperty("student_name") String studentName,
-                        @JsonProperty("student_number") String studentNumber){}
-
-    @PostMapping("/join")
-    public ResponseEntity<String> joinClub(@RequestBody ClubJoinData joinData) {
-        String responseString= clubService
-                .joinClub(joinData.clubName(), joinData.studentName(), joinData.studentNumber());
-        return ResponseEntity.ok(responseString);
-    }
-
-    // NEW: Endpoint to get all clubs with details
+    // Endpoint to get all clubs with details
     @GetMapping("/all")
     public ResponseEntity<List<ClubDto>> getAllClubs() {
         List<ClubDto> clubs = clubService.getAllClubs();
@@ -50,6 +38,20 @@ public class ClubController {
                 .map(EntityUtil::studentDto)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
+    }
+
+    // Join endpoint
+    @PostMapping("/join")
+    public ResponseEntity<String> joinClub(@RequestBody ClubJoinData joinData) {
+        String responseString = clubService.joinClub(joinData.club_name(), joinData.student_name(), joinData.student_number());
+        return ResponseEntity.ok(responseString);
+    }
+
+    // Quit endpoint
+    @PostMapping("/quit")
+    public ResponseEntity<String> quitClub(@RequestBody QuitRequest quitRequest) {
+        String responseString = clubService.quitClub(quitRequest.club_name(), quitRequest.student_name());
+        return ResponseEntity.ok(responseString);
     }
 
     @PostMapping("/create")
@@ -70,6 +72,12 @@ public class ClubController {
         return ResponseEntity.ok(responseString);
     }
 
+    // Records for request payloads
     record ClubData(String clubName, String description, String clubImage) {}
     record ClubUpdateData(String newDescription, String newClubImage) {}
+    record ClubJoinData(@JsonProperty("club_name") String club_name,
+                        @JsonProperty("student_name") String student_name,
+                        @JsonProperty("student_number") String student_number) {}
+    record QuitRequest(@JsonProperty("club_name") String club_name,
+                       @JsonProperty("student_name") String student_name) {}
 }

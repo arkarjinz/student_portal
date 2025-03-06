@@ -13,17 +13,11 @@ import org.example.studentprotal.entity.Student;
 import org.example.studentprotal.entity.StudentClub;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-/*
-student-info
-club-info
-lostandfound-info
- */
 
 @Service
 @RequiredArgsConstructor
@@ -57,22 +51,49 @@ public class ClubService {
         studentClub.setJoinDate(LocalDate.now());
         studentClub.setStudent(student);
         studentClub.setClub(club);
-        Optional<Club> clubOptional= clubDao.findByClubName(clubName);
-        if(clubOptional.isPresent()){
-            Club c = clubOptional.get();
-            if(c.getMembersCount()==null) c.setMembersCount(new BigDecimal(1));
-            else
-                club.setMembersCount(clubOptional.get().getMembersCount().add(new BigDecimal(1)));
-        }
-        else {
-            throw new RuntimeException("Club not found!");
+        // Optionally update members count if stored
+        if(club.getMembersCount() == null) {
+            club.setMembersCount(new BigDecimal(1));
+        } else {
+            club.setMembersCount(club.getMembersCount().add(new BigDecimal(1)));
         }
         club.getStudentClubs().add(studentClub);
         student.addStudentClub(studentClub);
         studentClubDao.save(studentClub);
 
-
         return "joined successfully";
+    }
+
+    @Transactional
+    public String quitClub(String clubName, String studentName) {
+        Optional<Club> clubOpt = clubDao.findByClubName(clubName);
+        if (!clubOpt.isPresent()) {
+            throw new EntityNotFoundException("Club not found");
+        }
+        Club club = clubOpt.get();
+
+        Optional<Student> studentOpt = studentDao.findByUsername(studentName);
+        if (!studentOpt.isPresent()) {
+            throw new EntityNotFoundException("Student not found");
+        }
+        Student student = studentOpt.get();
+
+        // Find the association to remove
+        Optional<StudentClub> associationOpt = club.getStudentClubs().stream()
+                .filter(sc -> sc.getStudent().getUsername().equals(studentName))
+                .findFirst();
+        if (!associationOpt.isPresent()) {
+            return "not a member";
+        }
+        StudentClub studentClub = associationOpt.get();
+        club.getStudentClubs().remove(studentClub);
+        student.getStudentClubs().remove(studentClub);
+        studentClubDao.delete(studentClub);
+        // Optionally update members count
+        if(club.getMembersCount() != null && club.getMembersCount().compareTo(BigDecimal.ZERO) > 0) {
+            club.setMembersCount(club.getMembersCount().subtract(new BigDecimal(1)));
+        }
+        return "quit successfully";
     }
 
     // Create a new club
@@ -117,7 +138,7 @@ public class ClubService {
         return clubDao.findClubInfoByClubName();
     }
 
-    // NEW: Get all clubs with full details
+    // Get all clubs with full details (member count is computed as size of studentClubs)
     public List<ClubDto> getAllClubs() {
         return clubDao.findAll().stream()
                 .map(club -> new ClubDto(
