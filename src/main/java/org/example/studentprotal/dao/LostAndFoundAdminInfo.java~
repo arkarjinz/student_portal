@@ -1,0 +1,6 @@
+package org.example.studentprotal.dao;
+
+public record LostAndFoundAdminInfo(
+        
+) {
+}
