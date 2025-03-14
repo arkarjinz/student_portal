@@ -29,10 +29,10 @@ public class SecurityConfig {
     }
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
-    throws Exception {
+            throws Exception {
         return configuration.getAuthenticationManager();
     }
-//    @Bean
+    //    @Bean
 //    public DaoAuthenticationProvider authenticationProvider() {
 //        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 //        provider.setUserDetailsService(userDetailsService);
@@ -60,9 +60,9 @@ public class SecurityConfig {
             };
             c.configurationSource(source);
         });
-       // http.authenticationProvider(authenticationProvider());
+        // http.authenticationProvider(authenticationProvider());
         http.authorizeHttpRequests(c -> {
-            c.requestMatchers("/api/auth/**","/static/**").permitAll();
+            c.requestMatchers("/api/auth/**","/images/**","http://localhost:8080/images/**").permitAll();
             c.anyRequest().authenticated();
         });
 

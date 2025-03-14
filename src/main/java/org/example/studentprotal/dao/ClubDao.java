@@ -11,12 +11,12 @@ import java.util.Optional;
 public interface ClubDao extends JpaRepository<Club, Integer> {
 
     @Query("""
-        select new org.example.studentprotal.dto.ClubInfo(
-            c.clubName, c.description, c.clubImage, count(s.id)
-        )
-        from Club c join c.studentClubs sc join sc.student s 
-        group by c.clubName, c.description, c.clubImage
-        """)
+    select new org.example.studentprotal.dto.ClubInfo(
+        c.clubName, c.description, c.clubImage, count(sc.student.id)
+    )
+    from Club c left join c.studentClubs sc
+    group by c.clubName, c.description, c.clubImage
+    """)
     List<ClubInfo> findClubInfoByClubName();
 
     @Query("""

@@ -1,7 +1,8 @@
 package org.example.studentprotal.controller;
 
-
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.example.studentprotal.dao.ItemDao;
 import org.example.studentprotal.dto.LostAndFoundITemDto;
 import org.example.studentprotal.service.LostAndFoundService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,42 +18,47 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/student-portal/lost-and-found")
 public class LostAndFoundController {
+
     @Autowired
-    private  LostAndFoundService lostAndFoundService;
+    private LostAndFoundService lostAndFoundService;
+    @Autowired
+    private ItemDao itemDao;
 
-    //http://localhost:8080/api/student-portal/lost-and-found/5
-    record LostAndFoundRequest(String title,
-                               String description,
-                               String image,
-                               boolean isFound){}
-
+    // Endpoint to create a lost and found item using multipart/form-data
     @PostMapping("/{id}")
-    public ResponseEntity<String>
-    createLostAndFoundItem(@RequestBody LostAndFoundRequest lostAndFoundRequest, @PathVariable("id") int studentId) {
-        LostAndFoundITemDto lostAndFoundITemDto = new LostAndFoundITemDto();
-        lostAndFoundITemDto.setFound(false);
-        lostAndFoundITemDto.setImageUrl(lostAndFoundRequest.image());
-        lostAndFoundITemDto.setTitle(lostAndFoundRequest.title());
-        lostAndFoundITemDto.setDescription(lostAndFoundRequest.description());
-        String responseString=lostAndFoundService.createLostAndFoundItem(lostAndFoundITemDto, studentId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseString);
+    public ResponseEntity<String> createLostAndFoundItem(
+            @PathVariable("id") int studentId,
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("isFound") boolean isFound,
+            @RequestParam("image") MultipartFile imageFile) {
+        try {
+            lostAndFoundService.createLostAndFoundItem(studentId, title, description, isFound, imageFile);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Item created");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing image");
+        }
     }
 
-
+    // Return DTO including Base64 encoded image for display if needed
     record LostAndFoundITemDtoResponse(int id, String title, String description,
-                               String image,  boolean found, String studentName){}
-
+                                       String imageBase64, boolean found, String studentName) {
+    }
 
     @GetMapping
-    public List<LostAndFoundITemDtoResponse> getAllLostAndFoundItems(){
-        return lostAndFoundService.getAllLostAndFoundItems()
-                .stream()
-                .map(i -> new LostAndFoundITemDtoResponse(i.getId(),
-                        i.getTitle(),
-                        i.getDescription(),
-                        i.getImageUrl(),
-                       i.isFound(),
-                       i.getStudent().getName()
-                       )).toList();
+    public List<LostAndFoundITemDto> getAllLostAndFoundItems() {
+        return itemDao.getAllLostAndFoundItems();
+    }
+
+    @PatchMapping("/{id}/toggle")
+    public ResponseEntity<String> toggleLostAndFoundStatus(
+            @PathVariable("id") int itemId,
+            @RequestParam("isFound") boolean isFound) {
+        try {
+            lostAndFoundService.toggleLostAndFoundStatus(itemId, isFound);
+            return ResponseEntity.ok("Item status updated successfully");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

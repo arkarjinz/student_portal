@@ -3,6 +3,7 @@ package org.example.studentprotal.dto;
 
 public class StudentDto {
     private Integer id;
+    private String name;
     private String username;
     private String studentNumber;
     private String year;
@@ -12,8 +13,9 @@ public class StudentDto {
     public StudentDto(){
 
     }
-    public StudentDto(Integer id, String username, String studentNumber, String year, String semester, int roseCount) {
+    public StudentDto(Integer id, String name, String username, String studentNumber, String year, String semester, int roseCount) {
         this.id = id;
+        this.name = name;
         this.username = username;
         this.studentNumber = studentNumber;
         this.year = year;
@@ -27,6 +29,13 @@ public class StudentDto {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUsername() {

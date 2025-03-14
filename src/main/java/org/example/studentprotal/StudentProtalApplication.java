@@ -39,23 +39,26 @@ public class StudentProtalApplication {
     @Profile("dev")
     public ApplicationRunner applicationRunner() {
         return r -> {
+
+            clubDao.findClubInfoByClubName()
+                    .forEach(c -> System.out.println(c));
             // Create a few clubs with local image paths.
-            Club club1 = new Club("A club for sports enthusiasts", "Sports Club", "/images/sports_club.jpg");
-            Club club2 = new Club("A club for music lovers", "Music Club", "/images/music_clubs.jpg");
-            Club club3 = new Club("A club for art fans", "Art Club", "/images/art_clubs.jpg");
-
-            clubDao.save(club1);
-            clubDao.save(club2);
-            clubDao.save(club3);
-
-            // Optionally, associate a student with one of the clubs.
-            Student student = studentDao.findByUsername("mary")
-                    .orElseThrow(() -> new EntityNotFoundException("Student not found"));
-            StudentClub sc = new StudentClub();
-            sc.setJoinDate(LocalDate.now());
-            sc.setStudent(student);
-            sc.setClub(club1);
-            studentClubDao.save(sc);
+//            Club club1 = new Club("A club for sports enthusiasts", "Sports Club", "/images/sports_club.jpg");
+//            Club club2 = new Club("A club for music lovers", "Music Club", "/images/music_clubs.jpg");
+//            Club club3 = new Club("A club for art fans", "Art Club", "/images/art_clubs.jpg");
+//
+//            clubDao.save(club1);
+//            clubDao.save(club2);
+//            clubDao.save(club3);
+//
+//            // Optionally, associate a student with one of the clubs.
+//            Student student = studentDao.findByUsername("mary")
+//                    .orElseThrow(() -> new EntityNotFoundException("Student not found"));
+//            StudentClub sc = new StudentClub();
+//            sc.setJoinDate(LocalDate.now());
+//            sc.setStudent(student);
+//            sc.setClub(club1);
+//            studentClubDao.save(sc);
         };
     }
 

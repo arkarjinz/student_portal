@@ -1,7 +1,12 @@
 package org.example.studentprotal.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.OffsetDateTime;
 
+@Getter
+@Setter
 public class PostDto {
     private Integer id;
     private String title;
@@ -10,11 +15,12 @@ public class PostDto {
     private String postOwner;
     private String profileImage;
     private int roseCount;
+    private int likeCount; // New field
 
-    public PostDto() {
-    }
+    public PostDto() {}
 
-    public PostDto(Integer id, String title, String content, OffsetDateTime createdAt, String postOwner, String profileImage, int roseCount) {
+    public PostDto(Integer id, String title, String content, OffsetDateTime createdAt,
+                   String postOwner, String profileImage, int roseCount, int likeCount) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -22,61 +28,9 @@ public class PostDto {
         this.postOwner = postOwner;
         this.profileImage = profileImage;
         this.roseCount = roseCount;
+        this.likeCount = likeCount;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getPostOwner() {
-        return postOwner;
-    }
-
-    public void setPostOwner(String postOwner) {
-        this.postOwner = postOwner;
-    }
-
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
-
-    public int getRoseCount() {
-        return roseCount;
-    }
-
-    public void setRoseCount(int roseCount) {
-        this.roseCount = roseCount;
-    }
+    // Getters and setters...
+    // (Omitted for brevity)
 }

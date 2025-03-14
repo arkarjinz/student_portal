@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
@@ -21,11 +23,18 @@ public class Post {
     @Column(columnDefinition = "text")
     private String content;
 
-    // Use OffsetDateTime to capture timezone offset
     private OffsetDateTime createdAt;
+
+    // Like count field
+    @Column(nullable = false)
+    private int likeCount = 0;
 
     @ManyToOne
     private Student student;
+
+    // Cascade likes so that deleting a post also deletes its likes
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> likes = new ArrayList<>();
 
     public Post() {}
 

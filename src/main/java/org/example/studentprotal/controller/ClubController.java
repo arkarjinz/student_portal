@@ -10,6 +10,7 @@ import org.example.studentprotal.service.ClubService;
 import org.example.studentprotal.util.EntityUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,6 @@ public class ClubController {
         return clubService.getClubInfo();
     }
 
-    // Endpoint to get all clubs with details
     @GetMapping("/all")
     public ResponseEntity<List<ClubDto>> getAllClubs() {
         List<ClubDto> clubs = clubService.getAllClubs();
@@ -40,14 +40,12 @@ public class ClubController {
         return ResponseEntity.ok(dtos);
     }
 
-    // Join endpoint
     @PostMapping("/join")
     public ResponseEntity<String> joinClub(@RequestBody ClubJoinData joinData) {
         String responseString = clubService.joinClub(joinData.club_name(), joinData.student_name(), joinData.student_number());
         return ResponseEntity.ok(responseString);
     }
 
-    // Quit endpoint
     @PostMapping("/quit")
     public ResponseEntity<String> quitClub(@RequestBody QuitRequest quitRequest) {
         String responseString = clubService.quitClub(quitRequest.club_name(), quitRequest.student_name());
@@ -72,7 +70,6 @@ public class ClubController {
         return ResponseEntity.ok(responseString);
     }
 
-    // Records for request payloads
     record ClubData(String clubName, String description, String clubImage) {}
     record ClubUpdateData(String newDescription, String newClubImage) {}
     record ClubJoinData(@JsonProperty("club_name") String club_name,
